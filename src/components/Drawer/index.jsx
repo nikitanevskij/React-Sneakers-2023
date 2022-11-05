@@ -1,39 +1,30 @@
-import axios from "axios";
-import React from "react";
-import AppContext from "../context";
+import React from 'react';
+import { fetchDELCartSneakers, fetchPOSTCartSneakers } from '../../redux/fetchCartSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Info from "../info";
-import styles from "./Drawer.module.scss";
+import Info from '../info';
+import styles from './Drawer.module.scss';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function Drawer({ onClickClose, sneakers, itogo, removeCart, opened }) {
-  const { cardSneakers, setCardSneakers } = React.useContext(AppContext);
+function Drawer({ onClickClose, sneakers, itogo, opened }) {
+  const dispatch = useDispatch();
+  const { orderId, cartSneakers } = useSelector((state) => state.fetchCartSlice);
   const [isOrderComplete, setIsOrderComplete] = React.useState(false);
-  const [orderId, setOrderId] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const onClickOrder = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axios.post(
-        "https://6161517ee46acd001777c003.mockapi.io/orders",
-        { items: cardSneakers }
-      );
-      // await axios.put("https://6161517ee46acd001777c003.mockapi.io/cart", []);
-      setOrderId(data.id);
-
+      dispatch(fetchPOSTCartSneakers());
       setIsOrderComplete(true);
-      setCardSneakers([]);
-      for (let i = 0; i < cardSneakers.length; i++) {
-        const item = cardSneakers[i];
-        await axios.delete(
-          "https://6161517ee46acd001777c003.mockapi.io/cart/" + item.id
-        );
-        await delay(1000);
+      for (let i = 0; i < cartSneakers.length; i++) {
+        const item = cartSneakers[i];
+        dispatch(fetchDELCartSneakers(item.id));
+        await delay(500);
       }
     } catch (error) {
-      alert("Не удалось создать заказ :(");
+      alert('Не удалось создать заказ :(');
     }
     setIsLoading(false);
   };
@@ -65,7 +56,7 @@ function Drawer({ onClickClose, sneakers, itogo, removeCart, opened }) {
                     <b>{items.price} руб.</b>
                   </div>
                   <img
-                    onClick={() => removeCart(items.id)}
+                    onClick={() => dispatch(fetchDELCartSneakers(items.id))}
                     className="removeBtn"
                     src="img/btn-remove.svg"
                     alt="remove"
@@ -86,11 +77,7 @@ function Drawer({ onClickClose, sneakers, itogo, removeCart, opened }) {
                   <b>{(itogo / 100) * 5} руб.</b>
                 </li>
               </ul>
-              <button
-                disabled={isLoading}
-                onClick={onClickOrder}
-                className="greenButton"
-              >
+              <button disabled={isLoading} onClick={onClickOrder} className="greenButton">
                 Оформить заказ
                 <img src="img/arrow.svg" alt="Arrow" />
               </button>
@@ -98,14 +85,12 @@ function Drawer({ onClickClose, sneakers, itogo, removeCart, opened }) {
           </div>
         ) : (
           <Info
-            image={
-              isOrderComplete ? "img/complete-order.jpg" : "img/empty-cart.jpg"
-            }
-            title={isOrderComplete ? "Заказ оформлен!" : "Корзина пустая"}
+            image={isOrderComplete ? 'img/complete-order.jpg' : 'img/empty-cart.jpg'}
+            title={isOrderComplete ? 'Заказ оформлен!' : 'Корзина пустая'}
             description={
               isOrderComplete
                 ? `Заказ #${orderId}  будет передан курьерской службе доставки `
-                : "Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ."
+                : 'Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ.'
             }
           />
         )}

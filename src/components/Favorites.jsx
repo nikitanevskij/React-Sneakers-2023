@@ -1,6 +1,6 @@
-import React from "react";
-import Card from "../components/Card/Card";
-import AppContext from "../components/context";
+import React from 'react';
+import Card from '../components/Card/Card';
+import AppContext from '../components/context';
 
 function Favorites() {
   const { cardFavorite, favoriteCart } = React.useContext(AppContext);
@@ -19,7 +19,7 @@ function Favorites() {
               {...obj}
               favorited={true}
               onFavorite={(obj) => favoriteCart(obj)}
-              // onPlus={(item) => setToCard(item)}
+              // onPlus={(item) => ADDSneakersToCart(item)}
             />
           ))}
         </div>

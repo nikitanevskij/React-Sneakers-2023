@@ -1,11 +1,10 @@
-import React from "react";
-import ContentLoader from "react-content-loader";
-import AppContext from "../context";
-import styles from "./Card.module.scss";
+import React from 'react';
+import ContentLoader from 'react-content-loader';
+import styles from './Card.module.scss';
+import { useSelector } from 'react-redux';
 
 function Card({
   id,
-  parentId,
   title,
   price,
   imgURL,
@@ -14,17 +13,18 @@ function Card({
   favorited = false,
   loading = false,
 }) {
-  const { isItemAdded } = React.useContext(AppContext);
-  // const [status, setStatus] = React.useState(added);
   const [isFavorite, setIsFavorite] = React.useState(favorited);
+  const { cartSneakers } = useSelector((state) => state.fetchCartSlice);
 
   const onClickPlus = () => {
     onPlus({ id, parentId: id, title, price, imgURL });
-    // setStatus(!status);
   };
   const onClickFavorite = () => {
     onFavorite({ id, parentId: id, title, price, imgURL });
     setIsFavorite(!isFavorite);
+  };
+  const isItemAdded = (id) => {
+    return cartSneakers.some((obj) => obj.parentId === id);
   };
   return (
     <div className={styles.card}>
@@ -49,7 +49,7 @@ function Card({
             <div className={styles.favorite}>
               <img
                 onClick={onClickFavorite}
-                src={isFavorite ? "img/liked.svg" : "img/unliked.svg"}
+                src={isFavorite ? 'img/liked.svg' : 'img/unliked.svg'}
                 alt="Unliked"
               />
             </div>
@@ -66,9 +66,7 @@ function Card({
             {onPlus && (
               <img
                 className={styles.btnPlus}
-                src={
-                  isItemAdded(id) ? "img/btn-checked.svg" : "img/btn-plus.svg"
-                }
+                src={isItemAdded(id) ? 'img/btn-checked.svg' : 'img/btn-plus.svg'}
                 alt="plus"
                 onClick={onClickPlus}
               />
