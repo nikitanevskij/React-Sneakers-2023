@@ -1,7 +1,11 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { setClosedDrawer } from '../redux/fetchCartSlice';
 
-function Header({ onClickClose, itogo }) {
+function Header() {
+  const dispatch = useDispatch();
+  const { totalPrice } = useSelector((state) => state.fetchCartSlice);
   return (
     <header className="d-flex justify-between align-center p-40">
       {/*верхний блок логотип сайта и название*/}
@@ -17,9 +21,9 @@ function Header({ onClickClose, itogo }) {
 
       <ul className="d-flex">
         {/*верхний блок корзины на главной*/}
-        <li className="mr-30 cu-p" onClick={onClickClose}>
+        <li className="mr-30 cu-p" onClick={() => dispatch(setClosedDrawer())}>
           <img width={18} hight={18} src="img/cart.svg" alt="Корзина" />
-          <span>{itogo} р.</span>
+          <span>{totalPrice} р.</span>
         </li>
 
         {/*верхний блок лого закладок*/}

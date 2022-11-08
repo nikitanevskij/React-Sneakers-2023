@@ -6,8 +6,8 @@ const initialState = {
   isLoading: true,
 };
 
-export const fetchSneakers = createAsyncThunk(
-  'sneakers/fetchSneakers',
+export const fetchGETSneakers = createAsyncThunk(
+  'sneakers/fetchGETSneakers',
   async (searchValue = '') => {
     const response = await axios.get(
       `https://6161517ee46acd001777c003.mockapi.io/items?search=${searchValue}`,
@@ -25,11 +25,11 @@ export const fetchSneakersSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchSneakers.pending, () => {});
-    builder.addCase(fetchSneakers.fulfilled, (state, action) => {
+    builder.addCase(fetchGETSneakers.pending, () => {});
+    builder.addCase(fetchGETSneakers.fulfilled, (state, action) => {
       state.sneakers = action.payload;
     });
-    builder.addCase(fetchSneakers.rejected, () => {
+    builder.addCase(fetchGETSneakers.rejected, () => {
       alert('Запрос не выполнен');
     });
   },

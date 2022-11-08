@@ -3,28 +3,27 @@ import ContentLoader from 'react-content-loader';
 import styles from './Card.module.scss';
 import { useSelector } from 'react-redux';
 
-function Card({
-  id,
-  title,
-  price,
-  imgURL,
-  onPlus,
-  onFavorite,
-  favorited = false,
-  loading = false,
-}) {
-  const [isFavorite, setIsFavorite] = React.useState(favorited);
+function Card({ id, title, price, imgURL, onPlus, onFavorite, loading = false, visible = true }) {
   const { cartSneakers } = useSelector((state) => state.fetchCartSlice);
+  const { favoriteSneakers } = useSelector((state) => state.fetchFavoriteSlice);
 
   const onClickPlus = () => {
     onPlus({ id, parentId: id, title, price, imgURL });
   };
   const onClickFavorite = () => {
     onFavorite({ id, parentId: id, title, price, imgURL });
-    setIsFavorite(!isFavorite);
   };
-  const isItemAdded = (id) => {
+  const isItemAddedToCart = (id) => {
     return cartSneakers.some((obj) => obj.parentId === id);
+  };
+  const isItemAddedToFavorite = (id) => {
+    console.log(
+      id,
+
+      favoriteSneakers.some((obj) => obj.parentId === id),
+      favoriteSneakers.map((item) => item.parentId),
+    );
+    return favoriteSneakers.some((obj) => obj.parentId === id);
   };
   return (
     <div className={styles.card}>
@@ -45,16 +44,15 @@ function Card({
         </ContentLoader>
       ) : (
         <>
-          {onFavorite && (
-            <div className={styles.favorite}>
+          <div className={styles.favorite}>
+            {visible && (
               <img
                 onClick={onClickFavorite}
-                src={isFavorite ? 'img/liked.svg' : 'img/unliked.svg'}
+                src={isItemAddedToFavorite(id) ? 'img/liked.svg' : 'img/unliked.svg'}
                 alt="Unliked"
               />
-            </div>
-          )}
-
+            )}
+          </div>
           <img width="100%" heigth={135} src={imgURL} alt="Sneakers" />
           <h5>{title}</h5>
           <div className="d-flex justify-between align-center">
@@ -63,10 +61,10 @@ function Card({
               <b> {`${price} руб.`}</b>
             </div>
 
-            {onPlus && (
+            {visible && (
               <img
                 className={styles.btnPlus}
-                src={isItemAdded(id) ? 'img/btn-checked.svg' : 'img/btn-plus.svg'}
+                src={isItemAddedToCart(id) ? 'img/btn-checked.svg' : 'img/btn-plus.svg'}
                 alt="plus"
                 onClick={onClickPlus}
               />

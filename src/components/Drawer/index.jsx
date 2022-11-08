@@ -1,17 +1,22 @@
 import React from 'react';
-import { fetchDELCartSneakers, fetchPOSTCartSneakers } from '../../redux/fetchCartSlice';
-import { useDispatch, useSelector } from 'react-redux';
-
-import Info from '../info';
 import styles from './Drawer.module.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  fetchDELCartSneakers,
+  fetchPOSTCartSneakers,
+  setClosedDrawer,
+} from '../../redux/fetchCartSlice';
+import Info from '../info';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function Drawer({ onClickClose, sneakers, itogo, opened }) {
+const Drawer = () => {
   const dispatch = useDispatch();
-  const { orderId, cartSneakers } = useSelector((state) => state.fetchCartSlice);
-  const [isOrderComplete, setIsOrderComplete] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isOrderComplete, setIsOrderComplete] = React.useState(false);
+  const { orderId, cartSneakers, totalPrice, closedDrawer } = useSelector(
+    (state) => state.fetchCartSlice,
+  );
 
   const onClickOrder = async () => {
     try {
@@ -30,7 +35,7 @@ function Drawer({ onClickClose, sneakers, itogo, opened }) {
   };
 
   return (
-    <div className={`${styles.overlay} ${opened && styles.overlayVisible}`}>
+    <div className={`${styles.overlay} ${closedDrawer && styles.overlayVisible}`}>
       <div className={styles.drawer}>
         {/*верхний блок корзины название и кнопка закрытия*/}
         <h2 className="d-flex justify-between mb-30  ">
@@ -39,13 +44,13 @@ function Drawer({ onClickClose, sneakers, itogo, opened }) {
             className="removeBtn cu-p"
             src="img/btn-remove.svg"
             alt="remove"
-            onClick={onClickClose}
+            onClick={() => dispatch(setClosedDrawer())}
           />
         </h2>
-        {sneakers.length > 0 ? (
+        {cartSneakers.length > 0 ? (
           <div className="d-flex flex-column flex">
             <div className="items flex">
-              {sneakers.map((items, index) => (
+              {cartSneakers.map((items, index) => (
                 <div key={index} className="cartItem d-flex align-center mb-20">
                   <div
                     style={{ backgroundImage: `url(${items.imgURL})` }}
@@ -69,12 +74,12 @@ function Drawer({ onClickClose, sneakers, itogo, opened }) {
                 <li>
                   <span>Итого:</span>
                   <div></div>
-                  <b>{itogo} руб.</b>
+                  <b>{totalPrice} руб.</b>
                 </li>
                 <li>
                   <span>Налог 5%</span>
                   <div></div>
-                  <b>{(itogo / 100) * 5} руб.</b>
+                  <b>{(totalPrice / 100) * 5} руб.</b>
                 </li>
               </ul>
               <button disabled={isLoading} onClick={onClickOrder} className="greenButton">
@@ -92,11 +97,12 @@ function Drawer({ onClickClose, sneakers, itogo, opened }) {
                 ? `Заказ #${orderId}  будет передан курьерской службе доставки `
                 : 'Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ.'
             }
+            onClickClose={() => dispatch(setClosedDrawer())}
           />
         )}
       </div>
     </div>
   );
-}
+};
 
 export default Drawer;

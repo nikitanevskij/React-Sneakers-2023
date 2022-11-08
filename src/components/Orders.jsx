@@ -1,6 +1,6 @@
-import React from "react";
-import axios from "axios";
-import Card from "../components/Card/Card";
+import React from 'react';
+import axios from 'axios';
+import Card from '../components/Card/Card';
 
 function Orders() {
   const [orders, setOrders] = React.useState([]); // заказы в orders
@@ -9,16 +9,13 @@ function Orders() {
   React.useEffect(() => {
     try {
       async function fetchData() {
-        const { data } = await axios.get(
-          "https://6161517ee46acd001777c003.mockapi.io/orders"
-        );
+        const { data } = await axios.get('https://6161517ee46acd001777c003.mockapi.io/orders');
         setOrders(data.reduce((prev, obj) => [...prev, ...obj.items], []));
         setIsLoading(false);
       }
       fetchData();
     } catch (error) {
-      alert("Ошибка при запросе заказов");
-      console.error(error);
+      alert('Ошибка при запросе заказов');
     }
   }, []);
 

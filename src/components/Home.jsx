@@ -1,16 +1,17 @@
 import React from 'react';
 import Card from '../components/Card/Card';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSneakers } from '../redux/fetchSneakersSlice';
+import { fetchGETSneakers } from '../redux/fetchSneakersSlice';
 import debounce from 'lodash.debounce';
 
-const Home = ({ sneakers, favoriteCart, ADDSneakersToCart }) => {
+const Home = ({ ADDSneakersToFavorite, ADDSneakersToCart }) => {
   const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => state.fetchSneakersSlice);
+
+  const { sneakers, isLoading } = useSelector((state) => state.fetchSneakersSlice);
   const [itemInput, setItemInput] = React.useState('');
 
   const updateSearchValue = React.useCallback(
-    debounce((str) => dispatch(fetchSneakers(str)), 500),
+    debounce((str) => dispatch(fetchGETSneakers(str)), 500),
     [],
   );
 
@@ -21,7 +22,7 @@ const Home = ({ sneakers, favoriteCart, ADDSneakersToCart }) => {
   };
 
   const clearInput = () => {
-    dispatch(fetchSneakers());
+    dispatch(fetchGETSneakers());
     setItemInput('');
   };
 
@@ -31,7 +32,7 @@ const Home = ({ sneakers, favoriteCart, ADDSneakersToCart }) => {
     return render.map((obj, index) => (
       <Card
         key={`${index} `}
-        onFavorite={(item) => favoriteCart(item)}
+        onFavorite={(item) => ADDSneakersToFavorite(item)}
         onPlus={(item) => ADDSneakersToCart(item)}
         loading={isLoading}
         {...obj}

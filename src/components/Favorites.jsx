@@ -1,9 +1,9 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import Card from '../components/Card/Card';
-import AppContext from '../components/context';
 
-function Favorites() {
-  const { cardFavorite, favoriteCart } = React.useContext(AppContext);
+const Favorites = ({ ADDSneakersToCart, ADDSneakersToFavorite }) => {
+  const { favoriteSneakers } = useSelector((state) => state.fetchFavoriteSlice);
   return (
     <div>
       <div className="content p-40">
@@ -13,19 +13,18 @@ function Favorites() {
 
         {/*основной блок карточек кроссовок в закладках*/}
         <div className="d-flex flex-wrap">
-          {cardFavorite.map((obj, index) => (
+          {favoriteSneakers.map((obj, index) => (
             <Card
               key={`${index} ${obj.price}`}
+              visible={false}
               {...obj}
-              favorited={true}
-              onFavorite={(obj) => favoriteCart(obj)}
-              // onPlus={(item) => ADDSneakersToCart(item)}
+              onFavorite={(obj) => ADDSneakersToFavorite(obj)}
+              onPlus={(obj) => ADDSneakersToCart(obj)}
             />
           ))}
         </div>
       </div>
     </div>
   );
-}
-
+};
 export default Favorites;
