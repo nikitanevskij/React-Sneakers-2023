@@ -19,15 +19,14 @@ export const fetchGETSneakers = createAsyncThunk(
 export const fetchSneakersSlice = createSlice({
   name: 'sneakers',
   initialState,
-  reducers: {
-    setIsLoading: (state, action) => {
-      state.isLoading = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchGETSneakers.pending, () => {});
+    builder.addCase(fetchGETSneakers.pending, (state) => {
+      state.isLoading = true;
+    });
     builder.addCase(fetchGETSneakers.fulfilled, (state, action) => {
       state.sneakers = action.payload;
+      state.isLoading = false;
     });
     builder.addCase(fetchGETSneakers.rejected, () => {
       alert('Запрос не выполнен');
@@ -35,6 +34,6 @@ export const fetchSneakersSlice = createSlice({
   },
 });
 
-export const { setIsLoading } = fetchSneakersSlice.actions;
+export const {} = fetchSneakersSlice.actions;
 
 export default fetchSneakersSlice.reducer;

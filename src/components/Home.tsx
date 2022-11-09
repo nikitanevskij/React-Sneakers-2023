@@ -1,27 +1,53 @@
-import React from 'react';
-import Card from '../components/Card/Card';
+import React, { ChangeEvent } from 'react';
+import Card from './Card/Card';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGETSneakers } from '../redux/fetchSneakersSlice';
 import debounce from 'lodash.debounce';
+import { fetchADDCartSneakers, fetchDELCartSneakers } from '../redux/fetchCartSlice';
+import { fetchADDFavorite, fetchDELFavorite } from '../redux/fetchFavoriteSlice';
 
-const Home = ({ ADDSneakersToFavorite, ADDSneakersToCart }) => {
+type TSneakersADD = {
+  id: string;
+  imgURL: string;
+  parentId: string;
+  price: number;
+  title: string;
+};
+
+const Home: React.FC = () => {
   const dispatch = useDispatch();
-
-  const { sneakers, isLoading } = useSelector((state) => state.fetchSneakersSlice);
   const [itemInput, setItemInput] = React.useState('');
 
+  const { cartSneakers } = useSelector((state: any) => state.fetchCartSlice);
+  const { favoriteSneakers } = useSelector((state: any) => state.fetchFavoriteSlice);
+  const { sneakers, isLoading } = useSelector((state: any) => state.fetchSneakersSlice);
+
+  const ADDSneakersToCart = (obj: TSneakersADD) => {
+    const findItem = cartSneakers.find((item: any) => Number(item.parentId) === Number(obj.id));
+    //@ts-ignore
+    findItem ? dispatch(fetchDELCartSneakers(findItem.id)) : dispatch(fetchADDCartSneakers(obj));
+  };
+
+  const ADDSneakersToFavorite = (obj: TSneakersADD) => {
+    const findItem = favoriteSneakers.find((item: any) => Number(item.parentId) === Number(obj.id));
+    //@ts-ignore
+    findItem ? dispatch(fetchDELFavorite(findItem.id)) : dispatch(fetchADDFavorite(obj));
+  };
+
   const updateSearchValue = React.useCallback(
+    //@ts-ignore
     debounce((str) => dispatch(fetchGETSneakers(str)), 500),
     [],
   );
 
-  const valueInput = (e) => {
+  const valueInput = (e: ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value;
     updateSearchValue(searchValue);
     setItemInput(searchValue);
   };
 
   const clearInput = () => {
+    //@ts-ignore
     dispatch(fetchGETSneakers());
     setItemInput('');
   };
@@ -29,12 +55,12 @@ const Home = ({ ADDSneakersToFavorite, ADDSneakersToCart }) => {
   const renderItems = () => {
     const render = isLoading ? [...Array(10)] : sneakers;
 
-    return render.map((obj, index) => (
+    return render.map((obj: any, index: number) => (
       <Card
-        key={`${index} `}
-        onFavorite={(item) => ADDSneakersToFavorite(item)}
-        onPlus={(item) => ADDSneakersToCart(item)}
+        key={index}
         loading={isLoading}
+        ADDSneakersToCart={ADDSneakersToCart}
+        ADDSneakersToFavorite={ADDSneakersToFavorite}
         {...obj}
       />
     ));
