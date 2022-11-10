@@ -1,15 +1,18 @@
-import styles from './Card.module.scss';
-import { useSelector } from 'react-redux';
 import Skeleton from './Skeleton';
+import styles from './Card.module.scss';
+
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { TSneakers } from '../../redux/fetchCartSlice';
 
 type TCardProps = {
   id: string;
   title: string;
   price: number;
   imgURL: string;
-  loading: boolean;
-  ADDSneakersToCart?: any;
-  ADDSneakersToFavorite?: any;
+  loading?: boolean;
+  ADDSneakersToCart?: (arg: TSneakers) => void;
+  ADDSneakersToFavorite?: (arg: TSneakers) => void;
 };
 
 const Card: React.FC<TCardProps> = ({
@@ -17,22 +20,22 @@ const Card: React.FC<TCardProps> = ({
   title,
   price,
   imgURL,
+  loading = false,
   ADDSneakersToCart,
   ADDSneakersToFavorite,
-  loading = false,
 }) => {
-  const { cartSneakers } = useSelector((state: any) => state.fetchCartSlice);
-  const { favoriteSneakers } = useSelector((state: any) => state.fetchFavoriteSlice);
+  const { cartSneakers } = useSelector((state: RootState) => state.fetchCartSlice);
+  const { favoriteSneakers } = useSelector((state: RootState) => state.fetchFavoriteSlice);
 
-  const onClickADDCart = () => ADDSneakersToCart({ id, parentId: id, title, price, imgURL });
+  const onClickADDCart = () =>
+    ADDSneakersToCart && ADDSneakersToCart({ id, parentId: id, title, price, imgURL });
 
   const onClickADDFavorite = () =>
-    ADDSneakersToFavorite({ id, parentId: id, title, price, imgURL });
+    ADDSneakersToFavorite && ADDSneakersToFavorite({ id, parentId: id, title, price, imgURL });
 
-  const isItemAddedToCart = (id: string) => cartSneakers.some((obj: any) => obj.parentId === id);
+  const isItemAddedToCart = (id: string) => cartSneakers.some((obj) => obj.parentId === id);
 
-  const isItemAddedToFavorite = (id: string) =>
-    favoriteSneakers.some((obj: any) => obj.parentId === id);
+  const isItemAddedToFavorite = (id: string) => favoriteSneakers.some((obj) => obj.parentId === id);
 
   return (
     <div className={styles.card}>
@@ -41,7 +44,7 @@ const Card: React.FC<TCardProps> = ({
       ) : (
         <>
           <div className={styles.favorite}>
-            {onClickADDFavorite && (
+            {ADDSneakersToCart && (
               <img
                 onClick={onClickADDFavorite}
                 src={isItemAddedToFavorite(id) ? 'img/liked.svg' : 'img/unliked.svg'}
@@ -57,7 +60,7 @@ const Card: React.FC<TCardProps> = ({
               <b> {`${price} руб.`}</b>
             </div>
 
-            {onClickADDCart && (
+            {ADDSneakersToFavorite && (
               <img
                 className={styles.btnPlus}
                 src={isItemAddedToCart(id) ? 'img/btn-checked.svg' : 'img/btn-plus.svg'}

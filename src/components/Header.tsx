@@ -1,11 +1,13 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+
+import { RootState } from '../redux/store';
+import { useSelector, useDispatch } from 'react-redux';
 import { setClosedDrawer } from '../redux/fetchCartSlice';
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
-  const { totalPrice } = useSelector((state: any) => state.fetchCartSlice);
+  const { totalPrice } = useSelector((state: RootState) => state.fetchCartSlice);
   return (
     <header className="d-flex justify-between align-center p-40">
       {/*верхний блок логотип сайта и название*/}
@@ -13,7 +15,7 @@ const Header: React.FC = () => {
         <div className="d-flex align-center">
           <img width={40} height={40} src="img/logo.png" alt="logo" />
           <div>
-            <h3 className="text-uppercase">React Sneakers</h3>
+            <h3 className="text-uppercase">React Sneakers 2023</h3>
             <p className="opacity-5">Магазин лучших кроссовок</p>
           </div>
         </div>

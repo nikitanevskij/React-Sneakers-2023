@@ -1,32 +1,33 @@
 import React from 'react';
 import styles from './Drawer.module.scss';
-import { useDispatch, useSelector } from 'react-redux';
+
+import { useSelector } from 'react-redux';
 import {
-  fetchDELCartSneakers,
-  fetchPOSTCartSneakers,
   setClosedDrawer,
+  fetchDELCartSneakers,
+  fetchPOSTOrderSneakers,
 } from '../../redux/fetchCartSlice';
+import { RootState, useAppDispatch } from '../../redux/store';
+
 import Info from '../Info';
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const Drawer: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOrderComplete, setIsOrderComplete] = React.useState(false);
   const { orderId, cartSneakers, totalPrice, closedDrawer } = useSelector(
-    (state: any) => state.fetchCartSlice,
+    (state: RootState) => state.fetchCartSlice,
   );
 
   const onClickOrder = async () => {
     try {
       setIsLoading(true);
-      //@ts-ignore
-      dispatch(fetchPOSTCartSneakers());
+      dispatch(fetchPOSTOrderSneakers());
       setIsOrderComplete(true);
       for (let i = 0; i < cartSneakers.length; i++) {
         const item = cartSneakers[i];
-        //@ts-ignore
         dispatch(fetchDELCartSneakers(item.id));
         await delay(500);
       }
@@ -52,7 +53,7 @@ const Drawer: React.FC = () => {
         {cartSneakers.length > 0 ? (
           <div className="d-flex flex-column flex">
             <div className="items flex">
-              {cartSneakers.map((items: any, index: number) => (
+              {cartSneakers.map((items, index: number) => (
                 <div key={index} className="cartItem d-flex align-center mb-20">
                   <div
                     style={{ backgroundImage: `url(${items.imgURL})` }}
@@ -63,7 +64,6 @@ const Drawer: React.FC = () => {
                     <b>{items.price} руб.</b>
                   </div>
                   <img
-                    //@ts-ignore
                     onClick={() => dispatch(fetchDELCartSneakers(items.id))}
                     className="removeBtn"
                     src="img/btn-remove.svg"

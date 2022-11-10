@@ -1,12 +1,24 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const initialState = {
+type TSneakers = {
+  title: string;
+  price: number;
+  imgURL: string;
+  id: string;
+};
+
+interface ISneakersSliceState {
+  sneakers: TSneakers[];
+  isLoading: boolean;
+}
+
+const initialState: ISneakersSliceState = {
   sneakers: [],
   isLoading: true,
 };
 
-export const fetchGETSneakers = createAsyncThunk(
+export const fetchGETSneakers = createAsyncThunk<TSneakers[], string | undefined>(
   'sneakers/fetchGETSneakers',
   async (searchValue = '') => {
     const response = await axios.get(
@@ -33,7 +45,5 @@ export const fetchSneakersSlice = createSlice({
     });
   },
 });
-
-export const {} = fetchSneakersSlice.actions;
 
 export default fetchSneakersSlice.reducer;

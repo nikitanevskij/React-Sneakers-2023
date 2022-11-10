@@ -1,24 +1,38 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { TSneakers } from './fetchCartSlice';
 
-const initialState = {
+interface ISneakersSliceState {
+  favoriteSneakers: TSneakers[];
+}
+
+const initialState: ISneakersSliceState = {
   favoriteSneakers: [],
 };
 
-export const fetchGETFavorite = createAsyncThunk('sneakers/fetchGETFavorite', async () => {
-  const response = await axios.get('https://6161517ee46acd001777c003.mockapi.io/favorites');
-  return response.data;
-});
-export const fetchDELFavorite = createAsyncThunk('sneakers/fetchDELFavorite', async (id) => {
-  const response = await axios.delete(
-    `https://6161517ee46acd001777c003.mockapi.io/favorites/${id}`,
-  );
-  return response.data.parentId;
-});
-export const fetchADDFavorite = createAsyncThunk('sneakers/fetchADDFavorite', async (obj) => {
-  const response = await axios.post('https://6161517ee46acd001777c003.mockapi.io/favorites', obj);
-  return response.data;
-});
+export const fetchGETFavorite = createAsyncThunk<TSneakers[]>(
+  'sneakers/fetchGETFavorite',
+  async () => {
+    const response = await axios.get('https://6161517ee46acd001777c003.mockapi.io/favorites');
+    return response.data;
+  },
+);
+export const fetchDELFavorite = createAsyncThunk<string, string>(
+  'sneakers/fetchDELFavorite',
+  async (id) => {
+    const response = await axios.delete(
+      `https://6161517ee46acd001777c003.mockapi.io/favorites/${id}`,
+    );
+    return response.data.parentId;
+  },
+);
+export const fetchADDFavorite = createAsyncThunk<TSneakers, TSneakers>(
+  'sneakers/fetchADDFavorite',
+  async (obj) => {
+    const response = await axios.post('https://6161517ee46acd001777c003.mockapi.io/favorites', obj);
+    return response.data;
+  },
+);
 
 export const fetchFavoriteSlice = createSlice({
   name: 'sneakers',
@@ -43,7 +57,5 @@ export const fetchFavoriteSlice = createSlice({
     });
   },
 });
-
-export const {} = fetchFavoriteSlice.actions;
 
 export default fetchFavoriteSlice.reducer;
